@@ -24,9 +24,7 @@ import dev.handsup.auction.domain.auction_field.AuctionStatus;
 import dev.handsup.auction.domain.auction_field.TradeMethod;
 import dev.handsup.auction.domain.product.ProductStatus;
 import dev.handsup.auction.domain.product.product_category.ProductCategory;
-import dev.handsup.auction.dto.request.AuctionSearchCondition;
-import dev.handsup.auction.exception.AuctionErrorCode;
-import dev.handsup.common.exception.ValidationException;
+import dev.handsup.search.dto.AuctionSearchCondition;
 import lombok.RequiredArgsConstructor;
 
 @Repository
@@ -37,10 +35,10 @@ public class AuctionQueryRepositoryImpl implements AuctionQueryRepository {
 
 	@Override
 	public Slice<Auction> searchAuctions(AuctionSearchCondition condition, Pageable pageable) {
-		List<Auction> content = queryFactory.select(QAuction.auction)
+		List<Auction> content = queryFactory.select(auction)
 			.from(auction)
 			.join(auction.product, product).fetchJoin()
-			.leftJoin(product.productCategory, productCategory).fetchJoin()
+			.join(product.productCategory, productCategory).fetchJoin()
 			.where(
 				keywordContains(condition.keyword()),
 				categoryEq(condition.productCategory()),
@@ -54,8 +52,8 @@ public class AuctionQueryRepositoryImpl implements AuctionQueryRepository {
 				isProgressEq(condition.isProgress())
 			)
 			.orderBy(searchAuctionSort(pageable))
-			.limit(pageable.getPageSize() + 1L)
 			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize() + 1)
 			.fetch();
 		boolean hasNext = hasNext(pageable.getPageSize(), content);
 		return new SliceImpl<>(content, pageable, hasNext);
@@ -72,7 +70,7 @@ public class AuctionQueryRepositoryImpl implements AuctionQueryRepository {
 				guEq(gu),
 				dongEq(dong)
 			)
-			.orderBy(recommendAuctionSort(pageable))
+			.orderBy(searchAuctionSort(pageable))
 			.limit(pageable.getPageSize() + 1L)
 			.offset(pageable.getOffset())
 			.fetch();
@@ -126,19 +124,6 @@ public class AuctionQueryRepositoryImpl implements AuctionQueryRepository {
 			.orElse(auction.createdAt.desc()); // 기본값 최신순
 	}
 
-	private OrderSpecifier<?> recommendAuctionSort(Pageable pageable) {
-		return pageable.getSort().stream()
-			.findFirst()
-			.map(order -> switch (order.getProperty()) {
-				case "북마크수" -> auction.bookmarkCount.desc();
-				case "마감일" -> auction.endDate.asc();
-				case "입찰수" -> auction.biddingCount.desc();
-				case "최근생성" -> auction.createdAt.desc();
-				default -> throw new ValidationException(AuctionErrorCode.INVALID_SORT_INPUT); //기본값 비허용
-			})
-			.orElseThrow(() -> new ValidationException(AuctionErrorCode.EMPTY_SORT_INPUT)); //null 비허용
-	}
-
 	private BooleanExpression keywordContains(String keyword) {
 		return keyword != null ? auction.title.contains(keyword) : null;
 	}
@@ -164,18 +149,18 @@ public class AuctionQueryRepositoryImpl implements AuctionQueryRepository {
 	}
 
 	private BooleanExpression initPriceMin(Integer minPrice) {
-		return (minPrice != null) ? auction.initPrice.goe(minPrice) : null;
+		return (minPrice != null) ? auction.currentBiddingPrice.goe(minPrice) : null;
 	}
 
 	private BooleanExpression initPriceMax(Integer maxPrice) {
-		return (maxPrice != null) ? auction.initPrice.loe(maxPrice) : null;
+		return (maxPrice != null) ? auction.currentBiddingPrice.loe(maxPrice) : null;
 	}
 
 	private BooleanExpression isNewProductEq(Boolean isNewProduct) {
 		if (isNewProduct == null) {
 			return null;
 		}
-		if (Boolean.TRUE.equals(isNewProduct)) {
+		if (isNewProduct) {
 			return auction.product.status.eq(ProductStatus.NEW);
 		} else {
 			return auction.product.status.eq(ProductStatus.CLEAN).or(auction.product.status.eq(ProductStatus.DIRTY));

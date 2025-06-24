@@ -1,6 +1,6 @@
-package dev.handsup.auction.dto.response;
+package dev.handsup.search.dto;
 
-public record AuctionSimpleResponse(
+public record AuctionSearchResponse(
 
 	Long auctionId,
 	String title,
@@ -9,9 +9,9 @@ public record AuctionSimpleResponse(
 	int bookmarkCount,
 	String dong,
 	String createdAt,
-	String status
+	boolean isProgress
 ) {
-	public static AuctionSimpleResponse of(
+	public static AuctionSearchResponse of(
 		Long auctionId,
 		String title,
 		int currentBiddingPrice,
@@ -19,9 +19,9 @@ public record AuctionSimpleResponse(
 		int bookmarkCount,
 		String dong,
 		String createdAt,
-		String status
+		boolean isProgress
 	) {
-		return new AuctionSimpleResponse(
+		return new AuctionSearchResponse(
 			auctionId,
 			title,
 			currentBiddingPrice,
@@ -29,7 +29,7 @@ public record AuctionSimpleResponse(
 			bookmarkCount,
 			dong,
 			createdAt,
-			status
+			isProgress
 		);
 	}
 }
