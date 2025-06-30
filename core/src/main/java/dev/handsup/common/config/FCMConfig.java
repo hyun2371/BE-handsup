@@ -21,6 +21,7 @@ public class FcmConfig {
 
 	@PostConstruct
 	public void initialize() {
+		if (!FirebaseApp.getApps().isEmpty()) return;
 		try {
 			GoogleCredentials googleCredentials = GoogleCredentials
 				.fromStream(new ClassPathResource(FIREBASE_KEY_PATH).getInputStream());
