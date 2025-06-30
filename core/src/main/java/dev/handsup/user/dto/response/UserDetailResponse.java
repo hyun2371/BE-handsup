@@ -11,7 +11,6 @@ public record UserDetailResponse(
 	int score,
 	Address address,
 	String profileImageUrl,
-	int reportCount,
 	long readNotificationCount
 ) {
 	public static UserDetailResponse of(User user) {
@@ -23,7 +22,6 @@ public record UserDetailResponse(
 			user.getScore(),
 			user.getAddress(),
 			user.getProfileImageUrl(),
-			user.getReportCount(),
 			user.getReadNotificationCount()
 		);
 	}
