@@ -2,6 +2,7 @@ package dev.handsup.common.config;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -17,15 +18,15 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @Slf4j
 public class FcmConfig {
-	private static final String FIREBASE_KEY_PATH = "firebase/serviceAccountKey.json";
-
+	@Value("${fcm.key:firebase/serviceAccountKey.json}")
+	private String firebase_key_path;
 	@PostConstruct
 	public void initialize() {
 		if (!FirebaseApp.getApps().isEmpty())
 			return;
 		try {
 			GoogleCredentials googleCredentials = GoogleCredentials
-				.fromStream(new ClassPathResource(FIREBASE_KEY_PATH).getInputStream());
+				.fromStream(new ClassPathResource(firebase_key_path).getInputStream());
 			FirebaseOptions options = FirebaseOptions.builder()
 				.setCredentials(googleCredentials)
 				.build();
