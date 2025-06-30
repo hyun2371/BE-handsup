@@ -31,10 +31,10 @@ jobs:
         run: |
           mkdir -p ./core/src/main/resources/firebase
           echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ./core/src/main/resources/firebase/serviceAccountKey.json
-          mkdir -p ./core/src/test/resources/firebase
-          echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ./core/src/test/resources/firebase/serviceAccountKey.json
-          mkdir -p ./api/src/test/resources/firebase
-          echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ./api/src/test/resources/firebase/serviceAccountKey.json
+#          mkdir -p ./core/src/test/resources/firebase
+#          echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ./core/src/test/resources/firebase/serviceAccountKey.json
+#          mkdir -p ./api/src/test/resources/firebase
+#          echo "${{ secrets.FIREBASE_KEY }}" | base64 -d > ./api/src/test/resources/firebase/serviceAccountKey.json
 
     # gradle 권한 부여
       - name: Grant execute permission for gradlew
