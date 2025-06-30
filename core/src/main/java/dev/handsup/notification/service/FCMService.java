@@ -7,10 +7,8 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 
-import dev.handsup.auction.domain.Auction;
 import dev.handsup.common.exception.ValidationException;
 import dev.handsup.notification.domain.NotificationType;
-import dev.handsup.notification.dto.request.SaveFCMTokenRequest;
 import dev.handsup.notification.repository.FCMTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,19 +17,17 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Service
 public class FCMService {
-
 	private final FCMTokenRepository fcmTokenRepository;
 	private final FirebaseMessaging firebaseMessaging;
-	private final NotificationService notificationService;
 
-	public void sendMessage(
-		String senderEmail,
+	public void sendNotification(
+		Long senderId,
 		String senderNickname,
-		String receiverEmail,
-		NotificationType notificationType,
-		Auction auction
+		Long receiverId,
+		Long auctionId,
+		NotificationType notificationType
 	) {
-		String fcmToken = fcmTokenRepository.getFcmToken(receiverEmail);
+		String fcmToken = fcmTokenRepository.getFcmToken(receiverId);
 		if (fcmToken == null) {
 			return;
 		}
@@ -49,31 +45,23 @@ public class FCMService {
 			.setToken(fcmToken)
 			.build();
 
-		send(message, receiverEmail);
-
-		notificationService.saveNotification(
-			senderEmail,
-			receiverEmail,
-			senderNickname + notificationType.getContent(),
-			notificationType,
-			auction
-		);
+		send(message, receiverId);
 	}
 
-	private void send(Message message, String receiverEmail) {
+	private void send(Message message, Long receiverId) {
 		try {
 			firebaseMessaging.send(message);
-			log.info("Sent message: {}, to: {}", message, receiverEmail);
+			log.info("Sent message: {}, to: {}", message, receiverId);
 		} catch (FirebaseMessagingException e) {
 			throw new ValidationException(e.getMessage());
 		}
 	}
 
-	public void saveFcmToken(String userEmail, SaveFCMTokenRequest request) {
-		fcmTokenRepository.saveFcmToken(userEmail, request.fcmToken());
+	public void saveFcmToken(Long userId, String fcmToken) {
+		fcmTokenRepository.saveFcmToken(userId, fcmToken);
 	}
 
-	public void deleteFcmToken(String email) {
-		fcmTokenRepository.deleteFcmToken(email);
+	public void deleteFcmToken(Long userId) {
+		fcmTokenRepository.deleteFcmToken(userId);
 	}
 }

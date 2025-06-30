@@ -9,22 +9,24 @@ import lombok.RequiredArgsConstructor;
 @Component
 public class FCMTokenRepository {
 
-	private final StringRedisTemplate tokenRedisTemplate;
+	private static final String PREFIX = "fcmToken:";
 
-	public void saveFcmToken(String receiverEmail, String fcmToken) {
-		tokenRedisTemplate.opsForValue()
-			.set(receiverEmail, fcmToken);
+	private final StringRedisTemplate redisTemplate;
+
+	public void saveFcmToken(Long userId, String fcmToken) {
+		redisTemplate.opsForValue()
+			.set(PREFIX + userId, fcmToken);
 	}
 
-	public String getFcmToken(String email) {
-		return tokenRedisTemplate.opsForValue().get(email);
+	public String getFcmToken(Long userId) {
+		return redisTemplate.opsForValue().get(PREFIX + userId);
 	}
 
-	public void deleteFcmToken(String email) {
-		tokenRedisTemplate.delete(email);
+	public void deleteFcmToken(Long userId) {
+		redisTemplate.delete(PREFIX + userId);
 	}
 
-	public boolean hasKey(String email) {
-		return Boolean.TRUE.equals(tokenRedisTemplate.hasKey(email));
+	public boolean hasKey(Long userId) {
+		return redisTemplate.hasKey(PREFIX + userId);
 	}
 }
