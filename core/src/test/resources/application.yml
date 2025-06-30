@@ -24,3 +24,5 @@ cloud:
       bucket: s3-bucket-name
     stack:
       auto: false
+fcm:
+  key: firebase/serviceAccountKey.json
