@@ -21,8 +21,6 @@ import dev.handsup.common.dto.CommonMapper;
 import dev.handsup.common.dto.PageResponse;
 import dev.handsup.common.exception.NotFoundException;
 import dev.handsup.common.exception.ValidationException;
-import dev.handsup.notification.domain.NotificationType;
-import dev.handsup.notification.service.FCMService;
 import dev.handsup.user.domain.User;
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +30,6 @@ public class BookmarkService {
 
 	private final BookmarkRepository bookmarkRepository;
 	private final AuctionRepository auctionRepository;
-	private final FCMService fcmService;
 
 	@Transactional
 	public EditBookmarkResponse addBookmark(User user, Long auctionId) {
@@ -44,20 +41,7 @@ public class BookmarkService {
 
 		bookmarkRepository.save(bookmark);
 
-		// user 는 sender
-		sendMessage(user, auction);
-
 		return BookmarkMapper.toEditBookmarkResponse(auction.getBookmarkCount());
-	}
-
-	private void sendMessage(User user, Auction auction) {
-		fcmService.sendMessage(
-			user.getEmail(),
-			user.getNickname(),
-			auction.getSeller().getEmail(),
-			NotificationType.BOOKMARK,
-			auction
-		);
 	}
 
 	private void validateSelfBookmark(User user, Auction auction) {

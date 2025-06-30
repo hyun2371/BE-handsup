@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class AuctionSearch{
+public class AuctionSearch {
 
 	@Id
 	@GeneratedValue(strategy = IDENTITY)

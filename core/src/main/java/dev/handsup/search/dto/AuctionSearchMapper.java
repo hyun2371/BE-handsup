@@ -3,10 +3,10 @@ package dev.handsup.search.dto;
 import static lombok.AccessLevel.*;
 
 import dev.handsup.auction.domain.Auction;
-import dev.handsup.search.domain.AuctionSearch;
 import dev.handsup.auction.domain.auction_field.AuctionStatus;
 import dev.handsup.auction.domain.product.Product;
 import dev.handsup.recommend.dto.RecommendAuctionResponse;
+import dev.handsup.search.domain.AuctionSearch;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = PRIVATE)
@@ -18,7 +18,7 @@ public class AuctionSearchMapper {
 			.productId(product.getId())
 			.category(product.getProductCategory().getValue())
 			.title(auction.getTitle())
-			.isNewProduct(auction.getStatus()== AuctionStatus.BIDDING)
+			.isNewProduct(auction.getStatus() == AuctionStatus.BIDDING)
 			.imgUrl(product.getImages().get(0).toString())
 			.endDate(auction.getEndDate())
 			.tradingLocation(auction.getTradingLocation())

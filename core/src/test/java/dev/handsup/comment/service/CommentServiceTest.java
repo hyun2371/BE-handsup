@@ -27,7 +27,6 @@ import dev.handsup.comment.repository.CommentRepository;
 import dev.handsup.fixture.AuctionFixture;
 import dev.handsup.fixture.CommentFixture;
 import dev.handsup.fixture.UserFixture;
-import dev.handsup.notification.service.FCMService;
 import dev.handsup.user.domain.User;
 
 @DisplayName("[댓글 서비스 테스트]")
@@ -40,8 +39,7 @@ class CommentServiceTest {
 	private AuctionRepository auctionRepository;
 	@Mock
 	private CommentRepository commentRepository;
-	@Mock
-	private FCMService fcmService;
+
 	@InjectMocks
 	private CommentService commentService;
 

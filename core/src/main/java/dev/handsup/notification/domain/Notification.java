@@ -1,28 +1,23 @@
 package dev.handsup.notification.domain;
 
-import static jakarta.persistence.ConstraintMode.*;
-import static jakarta.persistence.EnumType.*;
-import static jakarta.persistence.FetchType.*;
 import static jakarta.persistence.GenerationType.*;
 import static lombok.AccessLevel.*;
 
-import dev.handsup.auction.domain.Auction;
 import dev.handsup.common.entity.TimeBaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
 @NoArgsConstructor(access = PROTECTED)
+@Getter
 public class Notification extends TimeBaseEntity {
 
 	@Id
@@ -30,54 +25,47 @@ public class Notification extends TimeBaseEntity {
 	@Column(name = "notification_id")
 	private Long id;
 
-	@Column(name = "sender_email", nullable = false)
-	private String senderEmail;
+	@Column(name = "receiver_id")
+	private Long receiverId;
 
-	@Column(name = "receiver_email", nullable = false)
-	private String receiverEmail;
+	@Column(name = "sender_id")
+	private Long senderId;
 
-	@Column(name = "content", nullable = false)
-	private String content;
+	@Column(name = "auction_id")
+	private Long auctionId;
 
-	@Column(name = "type", nullable = false)
-	@Enumerated(STRING)
+	@Column(name = "type")
+	@Enumerated(EnumType.STRING)
 	private NotificationType type;
 
-	@ManyToOne(fetch = LAZY)
-	@JoinColumn(name = "auction_id",
-		nullable = false,
-		foreignKey = @ForeignKey(NO_CONSTRAINT))
-	private Auction auction;
+	@Column(name = "content")
+	private String content;
 
-	@Builder
-	private Notification(
-		String senderEmail,
-		String receiverEmail,
-		String content,
-		NotificationType type,
-		Auction auction
-	) {
-		this.senderEmail = senderEmail;
-		this.receiverEmail = receiverEmail;
-		this.content = content;
+	@Column(name = "is_read")
+	private boolean isRead = false;
+
+	@Builder(access = AccessLevel.PRIVATE)
+	private Notification(Long receiverId, Long senderId, Long auctionId, NotificationType type, String content) {
+		this.receiverId = receiverId;
+		this.senderId = senderId;
+		this.auctionId = auctionId;
 		this.type = type;
-		this.auction = auction;
+		this.content = content;
 	}
 
 	public static Notification of(
-		String senderEmail,
-		String receiverEmail,
+		Long receiverId,
+		Long senderId,
+		Long auctionId,
 		String content,
-		NotificationType type,
-		Auction auction
+		NotificationType type
 	) {
 		return Notification.builder()
-			.senderEmail(senderEmail)
-			.receiverEmail(receiverEmail)
+			.receiverId(receiverId)
+			.senderId(senderId)
+			.auctionId(auctionId)
 			.content(content)
 			.type(type)
-			.auction(auction)
 			.build();
 	}
-
 }

@@ -13,19 +13,19 @@ public interface AuctionSearchRepository extends JpaRepository<AuctionSearch, Lo
 	@Modifying
 	@Query(
 		value = """
-        UPDATE auction_search s
-        JOIN (
-            SELECT a.auction_id,
-                   COUNT(DISTINCT b.bookmark_id) AS bookmark_count,
-                   COUNT(DISTINCT bd.bidding_id) AS bidding_count
-              FROM auction a
-              LEFT JOIN bookmark b ON a.auction_id = b.auction_id
-              LEFT JOIN bidding bd ON a.auction_id = bd.auction_id
-             GROUP BY a.auction_id
-        ) cnt ON s.auction_id = cnt.auction_id
-        SET s.bookmark_count = cnt.bookmark_count,
-            s.bidding_count = cnt.bidding_count
-        """,
+			UPDATE auction_search s
+			JOIN (
+			    SELECT a.auction_id,
+			           COUNT(DISTINCT b.bookmark_id) AS bookmark_count,
+			           COUNT(DISTINCT bd.bidding_id) AS bidding_count
+			      FROM auction a
+			      LEFT JOIN bookmark b ON a.auction_id = b.auction_id
+			      LEFT JOIN bidding bd ON a.auction_id = bd.auction_id
+			     GROUP BY a.auction_id
+			) cnt ON s.auction_id = cnt.auction_id
+			SET s.bookmark_count = cnt.bookmark_count,
+			    s.bidding_count = cnt.bidding_count
+			""",
 		nativeQuery = true
 	)
 	void updateAuctionSearch();

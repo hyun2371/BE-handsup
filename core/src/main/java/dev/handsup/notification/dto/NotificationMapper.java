@@ -1,29 +1,23 @@
 package dev.handsup.notification.dto;
 
-import static lombok.AccessLevel.*;
-
-import dev.handsup.notification.domain.NotificationType;
-import dev.handsup.notification.dto.response.NotificationResponse;
+import dev.handsup.notification.domain.Notification;
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class NotificationMapper {
 
 	public static NotificationResponse toNotificationResponse(
-		Long notificationId,
-		NotificationType notificationType,
-		String content,
-		String senderProfileImageUrl,
-		Long auctionId,
-		String auctionImageUrl
+		Notification notification
 	) {
-		return NotificationResponse.of(
-			notificationId,
-			notificationType,
-			content,
-			senderProfileImageUrl,
-			auctionId,
-			auctionImageUrl
+		return new NotificationResponse(
+			notification.getId(),
+			notification.getReceiverId(),
+			notification.getSenderId(),
+			notification.getAuctionId(),
+			notification.getType().getTitle(),
+			notification.getContent(),
+			notification.getCreatedAt().toString()
 		);
 	}
 }

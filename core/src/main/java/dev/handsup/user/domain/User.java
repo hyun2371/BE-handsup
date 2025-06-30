@@ -48,9 +48,6 @@ public class User extends TimeBaseEntity {
 	@Column(name = "profile_image_url")
 	private String profileImageUrl;
 
-	@Column(name = "report_count", nullable = false)
-	private int reportCount = 0;
-
 	@Column(name = "read_notification_count", nullable = false)
 	private long readNotificationCount = 0;
 
@@ -132,11 +129,6 @@ public class User extends TimeBaseEntity {
 		Pattern pattern = Pattern.compile(emailRegex);
 		Matcher matcher = pattern.matcher(email);
 		Assert.isTrue(matcher.matches(), NON_VALIDATED_EMAIL.getMessage());
-	}
-
-	//== 비즈니스 메서드==//
-	public void updateReadNotificationCount(long readNotificationCount) {
-		this.readNotificationCount = readNotificationCount;
 	}
 
 	public void operateScore(int evaluationScore) {

@@ -4,12 +4,33 @@
 가지고 있는 물건을 얼마에 판매해야 할지 모르겠다면?<br>
 <b>HandsUp</b>에서 합리적으로 가격을 책정해 용돈을 벌어보아요!
 
+[서비스 URL](https://handup.shop)
+
+## 🌟 담당 구현 기능
+
+| 기능              | 상세 기능                                                                                                     |
+|:-----------------:|---------------------------------------------------------------------------------------------------------------|
+| 채팅              | <ul><li>[WebSocket과 STOMP를 활용한 실시간 채팅 구현](https://hyun-deving.tistory.com/31)</li><li>메시지 브로커로 Redis Pub/Sub 사용</li></ul> |
+| 질문 작성 및 조회 | <ul><li>동적 쿼리로 상품 목록 필터링 및 정렬 기능 구현</li><li>Redis Sorted Set으로 상품 인기 검색어 구현</li></ul> |
+| 경매 입찰 및 낙찰 | <ul><li>입찰 동시성 문제를 Redisson으로 해결</li><li>[낙찰 비즈니스 로직 개발](https://github.com/user-attachments/assets/573fd559-adfb-4c2c-8a18-b1473ca96dc9)</li> </ul> |
+| 테스트            | <ul><li>Test Container를 이용한 독립적인 테스트 환경 구축</li><li>계층별 단위 테스트 및 통합 테스트 수행</li></ul> |
+| 인프라            | <ul><li>[Docker 및 GitHub Actions 활용한 배포 자동화](https://hyun-deving.tistory.com/33)</li><li>AWS Route53와 ELB를 활용한 SSL 인증서 적용</li><li>AWS S3 연동한 이미지 업로드 API 구현</li></ul> |
+
+<br>
+
 ## 📢 프로젝트 소개
 
 <div>
   <img width="800" alt="image" src="https://github.com/Programmers-HandsUp/BE-handsup/assets/77109954/8e3b8727-a732-4b9c-a575-c2bdca9f576b">
 </div>
 <br>
+
+=======
+<div>
+  <img width="800" alt="image" src="https://github.com/Programmers-HandsUp/BE-handsup/assets/77109954/8e3b8727-a732-4b9c-a575-c2bdca9f576b">
+</div>
+<br>
+
 
 ## 🛠️ 기술 스택
 

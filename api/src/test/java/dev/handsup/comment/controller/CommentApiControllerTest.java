@@ -24,7 +24,6 @@ import dev.handsup.fixture.AuctionFixture;
 import dev.handsup.fixture.CommentFixture;
 import dev.handsup.fixture.ProductFixture;
 import dev.handsup.fixture.UserFixture;
-import dev.handsup.notification.repository.FCMTokenRepository;
 import dev.handsup.user.domain.User;
 
 @DisplayName("[Comment 통합 테스트]")
@@ -36,8 +35,7 @@ class CommentApiControllerTest extends ApiTestSupport {
 	private ProductCategory productCategory;
 	@Autowired
 	private CommentRepository commentRepository;
-	@Autowired
-	private FCMTokenRepository fcmTokenRepository;
+
 
 	@BeforeEach
 	void setUp() {
@@ -50,7 +48,6 @@ class CommentApiControllerTest extends ApiTestSupport {
 	@DisplayName("[댓글을 등록할 수 있다.]")
 	@Test
 	void registerComment() throws Exception {
-		fcmTokenRepository.saveFcmToken(seller.getEmail(), "fcmToken123");
 		RegisterCommentRequest request = RegisterCommentRequest.of("와");
 
 		mockMvc.perform(post("/api/auctions/{auctionId}/comments", auction.getId())

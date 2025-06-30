@@ -1,11 +1,7 @@
 package dev.handsup.common.config;
 
 import java.io.IOException;
-import java.io.InputStream;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -15,28 +11,26 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Configuration
-public class FCMConfig {
-
-	@Value("${fcm.certification}")
-	private String googleApplicationCredentials;
-
+@Slf4j
+public class FcmConfig {
+	private static final String FIREBASE_KEY_PATH = "firebase/serviceAccountKey.json";
 	@PostConstruct
-	public void initialize() throws IOException {
-		ClassPathResource resource = new ClassPathResource(googleApplicationCredentials);
-
-		try (InputStream inputStream = resource.getInputStream()) {
+	public void initialize() {
+		if (!FirebaseApp.getApps().isEmpty())
+			return;
+		try {
+			GoogleCredentials googleCredentials = GoogleCredentials
+				.fromStream(new ClassPathResource(FIREBASE_KEY_PATH).getInputStream());
 			FirebaseOptions options = FirebaseOptions.builder()
-				.setCredentials(GoogleCredentials.fromStream(inputStream))
+				.setCredentials(googleCredentials)
 				.build();
-
-			if (FirebaseApp.getApps().isEmpty()) {
-				FirebaseApp.initializeApp(options);
-				log.info("FirebaseApp initialization complete");
-			}
+			FirebaseApp.initializeApp(options);
+		} catch (IOException e) {
+			log.error(e.getMessage());
 		}
 	}
 

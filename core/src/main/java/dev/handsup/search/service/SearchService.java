@@ -33,7 +33,6 @@ public class SearchService {
 	private final RedisSearchRepository redisSearchRepository;
 	private final PreferredProductCategoryRepository preferredProductCategoryRepository;
 
-
 	@Transactional(readOnly = true)
 	public PageResponse<AuctionSearchResponse> searchAuctions(AuctionSearchCondition condition, Pageable pageable) {
 		Slice<AuctionSearchResponse> auctionResponsePage = auctionRepository
