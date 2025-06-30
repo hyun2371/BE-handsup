@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class FCMController {
+public class FcmControllerTmp {
 	private final FcmServiceTmp fcmService;
 
 	@PostMapping("/api/fcm-tokens")
