@@ -57,15 +57,15 @@ public class Notification extends TimeBaseEntity {
 		Long receiverId,
 		Long senderId,
 		Long auctionId,
-		NotificationType type,
-		String content
+		String content,
+		NotificationType type
 	) {
 		return Notification.builder()
 			.receiverId(receiverId)
 			.senderId(senderId)
 			.auctionId(auctionId)
-			.type(type)
 			.content(content)
+			.type(type)
 			.build();
 	}
 }
