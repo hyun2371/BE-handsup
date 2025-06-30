@@ -3,8 +3,6 @@ name: CI Backend
 on:
   pull_request:
     branches: ["main", "dev"]
-  push:
-    branches: [ "**" ]
 
 permissions:
   contents: read
