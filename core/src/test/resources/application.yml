@@ -24,6 +24,3 @@ cloud:
       bucket: s3-bucket-name
     stack:
       auto: false
-
-fcm:
-  certification: firebase/firebase_account.json
