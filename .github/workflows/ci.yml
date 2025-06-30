@@ -32,7 +32,11 @@ jobs:
           mkdir -p ./core/src/main/resources/firebase
           echo "${{ secrets.FIREBASE_KEY }}" > ./core/src/main/resources/firebase/serviceAccountKey.json
 
-      # gradle 권한 부여
+      - name: Check serviceAccountKey.json existence
+        run: ls -al ./core/build/resources/main/firebase/
+
+
+    # gradle 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
         shell: bash
