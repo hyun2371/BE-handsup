@@ -2,7 +2,6 @@ package dev.handsup.common.config;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
@@ -18,9 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @Slf4j
 public class FcmConfig {
-
-	@Value("${fcm.key}")
-	private String FIREBASE_KEY_PATH;
+	private static final String FIREBASE_KEY_PATH = "firebase/serviceAccountKey.json";
 
 	@PostConstruct
 	public void initialize() {

@@ -2,7 +2,7 @@ name: CI Backend
 
 on:
   pull_request:
-    branches: ["main", "dev"]
+    branches: [ "main", "dev" ]
 
 permissions:
   contents: read
@@ -27,14 +27,10 @@ jobs:
           distribution: 'temurin'
 
       # firebase json 파일 생성
-      - name : Generate serviceAccountKey.json
+      - name: Generate serviceAccountKey.json
         run: |
           mkdir -p ./core/src/main/resources/firebase
-          mkdir -p ./core/src/test/resources/firebase
-          mkdir -p ./api/src/test/resources/firebase
           echo "${{ secrets.FIREBASE_KEY }}" > ./core/src/main/resources/firebase/serviceAccountKey.json
-          echo "${{ secrets.FIREBASE_KEY }}" > ./core/src/test/resources/firebase/serviceAccountKey.json
-          echo "${{ secrets.FIREBASE_KEY }}" > ./api/src/test/resources/firebase/serviceAccountKey.json
 
       # gradle 권한 부여
       - name: Grant execute permission for gradlew
