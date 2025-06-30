@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class NotificationSender {
 	private final NotificationService notificationService;
-	private final FCMService fcmService;
+	private final FcmServiceTmp fcmService;
 
 	public void sendNotification(User sender, User receiver, Long auctionId, NotificationType notificationType) {
 		String content = notificationType.processContent(sender.getNickname());

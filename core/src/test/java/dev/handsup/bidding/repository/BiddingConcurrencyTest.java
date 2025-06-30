@@ -19,7 +19,7 @@ import dev.handsup.auction.repository.auction.AuctionRepository;
 import dev.handsup.auction.repository.product.ProductCategoryRepository;
 import dev.handsup.bidding.dto.request.RegisterBiddingRequest;
 import dev.handsup.bidding.service.BiddingService;
-import dev.handsup.common.config.FcmConfig;
+import dev.handsup.common.config.FcmConfigTmp;
 import dev.handsup.config.TestAuditingConfig;
 import dev.handsup.fixture.AuctionFixture;
 import dev.handsup.fixture.UserFixture;
@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @SpringBootTest
 @Slf4j
-@Import({TestAuditingConfig.class, FcmConfig.class})
+@Import({TestAuditingConfig.class, FcmConfigTmp.class})
 class BiddingConcurrencyTest extends TestContainerSupport {
 
 	private Auction auction;

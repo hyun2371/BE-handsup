@@ -9,15 +9,15 @@ import com.google.firebase.messaging.Notification;
 
 import dev.handsup.common.exception.ValidationException;
 import dev.handsup.notification.domain.NotificationType;
-import dev.handsup.notification.repository.FCMTokenRepository;
+import dev.handsup.notification.repository.FcmTokenRepositoryTmp;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class FCMService {
-	private final FCMTokenRepository fcmTokenRepository;
+public class FcmServiceTmp {
+	private final FcmTokenRepositoryTmp fcmTokenRepository;
 	private final FirebaseMessaging firebaseMessaging;
 
 	public void sendNotification(

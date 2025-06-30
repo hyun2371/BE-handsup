@@ -16,12 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
-public class FcmConfig {
+public class FcmConfigTmp {
 	private static final String FIREBASE_KEY_PATH = "firebase/serviceAccountKey.json";
 
 	@PostConstruct
 	public void initialize() {
-		if (!FirebaseApp.getApps().isEmpty()) return;
+		if (!FirebaseApp.getApps().isEmpty())
+			return;
 		try {
 			GoogleCredentials googleCredentials = GoogleCredentials
 				.fromStream(new ClassPathResource(FIREBASE_KEY_PATH).getInputStream());
