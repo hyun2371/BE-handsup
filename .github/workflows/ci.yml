@@ -30,7 +30,7 @@ jobs:
       - name: Generate serviceAccountKey.json
         run: |
           mkdir -p ./core/src/main/resources/firebase
-          echo "${{ secrets.FIREBASE_KEY }}" > ./core/src/main/resources/firebase/serviceAccountKey.json
+          echo "${{ secrets.FIREBASE_ACCOUNT }}" | base64 -d > ./core/src/main/resources/firebase/serviceAccountKey.json
 
     # gradle 권한 부여
       - name: Grant execute permission for gradlew
@@ -51,9 +51,6 @@ jobs:
       # 빌드
       - name: Build with Gradle
         run: ./gradlew build
-
-      - name: Check serviceAccountKey.json existence
-        run: ls -al ./core/build/resources/main/firebase/
 
       # 테스트 결과 PR 코멘트에 등록
       - name: Register the test results as PR comments
