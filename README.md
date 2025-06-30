@@ -25,6 +25,13 @@
 </div>
 <br>
 
+=======
+<div>
+  <img width="800" alt="image" src="https://github.com/Programmers-HandsUp/BE-handsup/assets/77109954/8e3b8727-a732-4b9c-a575-c2bdca9f576b">
+</div>
+<br>
+
+
 ## 🛠️ 기술 스택
 
 - <b>Core</b>
