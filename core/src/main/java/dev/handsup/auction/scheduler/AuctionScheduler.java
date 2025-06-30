@@ -21,7 +21,7 @@ public class AuctionScheduler {
 	}
 
 	@Scheduled(cron = "0 */3 * * * *")
-	public void updateAuctionSearch(){
+	public void updateAuctionSearch() {
 		auctionSearchRepository.updateAuctionSearch();
 	}
 }

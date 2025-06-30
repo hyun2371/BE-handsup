@@ -48,7 +48,6 @@ public class User extends TimeBaseEntity {
 	@Column(name = "profile_image_url")
 	private String profileImageUrl;
 
-
 	@Column(name = "read_notification_count", nullable = false)
 	private long readNotificationCount = 0;
 

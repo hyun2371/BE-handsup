@@ -16,7 +16,7 @@ public class FCMTokenRepository {
 	private final StringRedisTemplate redisTemplate;
 
 	public void saveFcmToken(Long userId, String fcmToken) {
-		if (!hasKey(userId)){
+		if (!hasKey(userId)) {
 			redisTemplate.opsForValue()
 				.set(PREFIX + userId, fcmToken, 3000, TimeUnit.DAYS);
 		}

@@ -21,7 +21,7 @@ public class NotificationService {
 	private final NotificationRepository notificationRepository;
 
 	@Transactional
-	public void saveNotification(User sender, User receiver, Long auctionId, String content, NotificationType type){
+	public void saveNotification(User sender, User receiver, Long auctionId, String content, NotificationType type) {
 		Notification notification = Notification.of(
 			receiver.getId(),
 			sender.getId(),

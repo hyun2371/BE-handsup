@@ -8,4 +8,5 @@ public record NotificationResponse(
 	String type,
 	String content,
 	String createdAt
-) { }
+) {
+}

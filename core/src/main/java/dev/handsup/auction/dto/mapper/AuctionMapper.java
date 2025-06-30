@@ -76,7 +76,7 @@ public class AuctionMapper {
 	}
 
 	public static AuctionSearchResponse toAuctionSearchResponse(Auction auction) {
-		boolean isProgress = auction.getStatus()== AuctionStatus.BIDDING;
+		boolean isProgress = auction.getStatus() == AuctionStatus.BIDDING;
 		return AuctionSearchResponse.of(
 			auction.getId(),
 			auction.getTitle(),

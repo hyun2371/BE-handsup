@@ -43,7 +43,7 @@ public class BiddingService {
 		auction.updateCurrentBiddingPrice(request.biddingPrice()); // 경매 입찰 최고가 갱신
 		auction.increaseBiddingCount(); // 경매 입찰 수 + 1
 		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
-		sendBiddingNotification(bidder,auction); //알림 전송
+		sendBiddingNotification(bidder, auction); //알림 전송
 
 		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
 	}
