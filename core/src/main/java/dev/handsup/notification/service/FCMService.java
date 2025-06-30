@@ -21,10 +21,8 @@ public class FCMService {
 	private final FirebaseMessaging firebaseMessaging;
 
 	public void sendNotification(
-		Long senderId,
-		String senderNickname,
 		Long receiverId,
-		Long auctionId,
+		String content,
 		NotificationType notificationType
 	) {
 		String fcmToken = fcmTokenRepository.getFcmToken(receiverId);
@@ -32,15 +30,10 @@ public class FCMService {
 			return;
 		}
 
-		if (notificationType.equals(NotificationType.CANCELED_PURCHASE_TRADING) ||
-			notificationType.equals(NotificationType.PURCHASE_WINNING)) {
-			senderNickname = "";
-		}
-
 		Message message = Message.builder()
 			.setNotification(Notification.builder()
 				.setTitle(notificationType.getTitle())
-				.setBody(senderNickname + notificationType.getContent())
+				.setBody(content)
 				.build())
 			.setToken(fcmToken)
 			.build();

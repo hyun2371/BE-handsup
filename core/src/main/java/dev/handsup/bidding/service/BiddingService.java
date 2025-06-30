@@ -112,7 +112,7 @@ public class BiddingService {
 		notificationSender.sendNotification(
 			bidder,
 			auction.getSeller(),
-			auction,
+			auction.getId(),
 			NotificationType.BIDDING_CREATED
 		);
 	}
