@@ -1,5 +1,7 @@
 package dev.handsup.notification.repository;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +16,10 @@ public class FCMTokenRepository {
 	private final StringRedisTemplate redisTemplate;
 
 	public void saveFcmToken(Long userId, String fcmToken) {
-		redisTemplate.opsForValue()
-			.set(PREFIX + userId, fcmToken);
+		if (!hasKey(userId)){
+			redisTemplate.opsForValue()
+				.set(PREFIX + userId, fcmToken, 3000, TimeUnit.DAYS);
+		}
 	}
 
 	public String getFcmToken(Long userId) {
