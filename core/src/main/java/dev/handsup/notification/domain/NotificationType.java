@@ -17,4 +17,11 @@ public enum NotificationType {
 
 	private final String title;
 	private final String content;
+
+	public String processContent(String senderNickname) {
+		if (this == PURCHASE_WINNING || this == CANCELED_PURCHASE_TRADING) {
+			return this.content;
+		}
+		return senderNickname + this.content;
+	}
 }
