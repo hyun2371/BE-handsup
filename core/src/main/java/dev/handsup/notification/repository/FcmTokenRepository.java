@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Component
-public class FcmTokenRepositoryTmp {
+public class FcmTokenRepository {
 
 	private static final String PREFIX = "fcmToken:";
 

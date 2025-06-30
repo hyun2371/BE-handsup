@@ -6,12 +6,12 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 
 @Builder(access = PRIVATE)
-public record SaveFcmTokenRequestTmp(
+public record SaveFcmTokenRequest(
 	@NotEmpty(message = "fcmToken을 입력해주세요.")
 	String fcmToken
 ) {
-	public static SaveFcmTokenRequestTmp from(String fcmToken) {
-		return SaveFcmTokenRequestTmp.builder()
+	public static SaveFcmTokenRequest from(String fcmToken) {
+		return SaveFcmTokenRequest.builder()
 			.fcmToken(fcmToken)
 			.build();
 	}

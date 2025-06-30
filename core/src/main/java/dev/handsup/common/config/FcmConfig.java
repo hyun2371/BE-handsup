@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @Slf4j
-public class FcmConfigTmp {
+public class FcmConfig {
 	private static final String FIREBASE_KEY_PATH = "firebase/serviceAccountKey.json";
 
 	@PostConstruct
