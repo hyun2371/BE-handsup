@@ -11,7 +11,6 @@ import dev.handsup.auction.dto.response.AuctionDetailResponse;
 import dev.handsup.auction.exception.AuctionErrorCode;
 import dev.handsup.auction.repository.auction.AuctionRepository;
 import dev.handsup.auction.repository.auction.AuctionSearchRepository;
-import dev.handsup.auction.repository.product.PreferredProductCategoryRepository;
 import dev.handsup.auction.repository.product.ProductCategoryRepository;
 import dev.handsup.common.exception.NotFoundException;
 import dev.handsup.search.dto.AuctionSearchMapper;
@@ -25,7 +24,6 @@ public class AuctionService {
 	private final AuctionRepository auctionRepository;
 	private final AuctionSearchRepository auctionSearchRepository;
 	private final ProductCategoryRepository productCategoryRepository;
-	private final PreferredProductCategoryRepository preferredProductCategoryRepository;
 
 	public AuctionDetailResponse registerAuction(RegisterAuctionRequest request, User user) {
 		ProductCategory productCategory = getProductCategoryByValue(request.productCategory());
