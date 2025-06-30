@@ -21,7 +21,7 @@ import dev.handsup.common.exception.NotFoundException;
 import dev.handsup.common.exception.ValidationException;
 import dev.handsup.common.redisson.DistributeLock;
 import dev.handsup.notification.domain.NotificationType;
-import dev.handsup.notification.service.FCMService;
+import dev.handsup.notification.service.NotificationSender;
 import dev.handsup.user.domain.User;
 import lombok.RequiredArgsConstructor;
 
@@ -32,7 +32,7 @@ public class BiddingService {
 	private final BiddingRepository biddingRepository;
 	private final BiddingQueryRepository biddingQueryRepository;
 	private final AuctionRepository auctionRepository;
-	private final FCMService fcmService;
+	private final NotificationSender notificationSender;
 
 	@Transactional
 	@DistributeLock(key = "'auction_' + #auctionId") // auctionId 값을 추출하여 락 키로 사용
@@ -43,6 +43,7 @@ public class BiddingService {
 		auction.updateCurrentBiddingPrice(request.biddingPrice()); // 경매 입찰 최고가 갱신
 		auction.increaseBiddingCount(); // 경매 입찰 수 + 1
 		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
+		sendBiddingNotification(bidder,auction); //알림 전송
 
 		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
 	}
@@ -64,7 +65,6 @@ public class BiddingService {
 		bidding.getAuction().updateAuctionStatusCompleted();
 		bidding.getAuction().updateBuyer(bidding.getBidder());
 		bidding.getAuction().updateBuyPrice(bidding.getBiddingPrice());
-		sendMessage(user, bidding, NotificationType.COMPLETED_PURCHASE_TRADING);
 
 		return BiddingMapper.toBiddingResponse(bidding);
 	}
@@ -78,12 +78,6 @@ public class BiddingService {
 		Bidding nextBidding = biddingQueryRepository.findWaitingBiddingLatest(bidding.getAuction())
 			.orElseThrow(() -> new NotFoundException(BiddingErrorCode.NOT_FOUND_NEXT_BIDDING));
 		nextBidding.updateTradingStatusPreparing();    // 다음 입찰 준비중 상태로 변경
-
-		// 현재 입찰자 거래 취소 알림
-		sendMessage(user, bidding, NotificationType.CANCELED_PURCHASE_TRADING);
-
-		// 다음 입찰자 낙찰 알림
-		sendMessage(user, nextBidding, NotificationType.PURCHASE_WINNING);
 
 		return BiddingMapper.toBiddingResponse(bidding);
 	}
@@ -114,14 +108,12 @@ public class BiddingService {
 			.orElseThrow(() -> new NotFoundException(AuctionErrorCode.NOT_FOUND_AUCTION));
 	}
 
-	private void sendMessage(User seller, Bidding bidding, NotificationType completedPurchaseTrading) {
-		fcmService.sendMessage(
-			seller.getEmail(),
-			seller.getNickname(),
-			bidding.getBidder().getEmail(),
-			completedPurchaseTrading,
-			bidding.getAuction()
+	private void sendBiddingNotification(User bidder, Auction auction) {
+		notificationSender.sendNotification(
+			bidder,
+			auction.getSeller(),
+			auction,
+			NotificationType.BIDDING_CREATED
 		);
 	}
-
 }
