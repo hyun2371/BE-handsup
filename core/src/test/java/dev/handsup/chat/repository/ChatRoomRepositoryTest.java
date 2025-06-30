@@ -84,9 +84,9 @@ class ChatRoomRepositoryTest extends DataJpaTestSupport {
 		assertAll(
 			() -> assertThat(chatRoomSlice).hasSize(3),
 			() -> assertThat(chatRoomSlice.hasNext()).isFalse(),
-			() -> assertThat(chatRooms.get(0)).isEqualTo(chatRoom1),
-			() -> assertThat(chatRooms.get(1)).isEqualTo(chatRoom2),
-			() -> assertThat(chatRooms.get(2)).isEqualTo(chatRoom3)
+			() -> assertThat(chatRooms.get(0).getId()).isEqualTo(chatRoom1.getId()),
+			() -> assertThat(chatRooms.get(1).getId()).isEqualTo(chatRoom2.getId()),
+			() -> assertThat(chatRooms.get(2).getId()).isEqualTo(chatRoom3.getId())
 		);
 	}
 }

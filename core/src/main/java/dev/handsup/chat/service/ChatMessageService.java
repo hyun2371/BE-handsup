@@ -15,8 +15,6 @@ import dev.handsup.chat.exception.ChatRoomErrorCode;
 import dev.handsup.chat.repository.ChatMessageRepository;
 import dev.handsup.chat.repository.ChatRoomRepository;
 import dev.handsup.common.exception.NotFoundException;
-import dev.handsup.notification.domain.NotificationType;
-import dev.handsup.notification.service.FCMService;
 import dev.handsup.user.domain.User;
 import dev.handsup.user.exception.UserErrorCode;
 import dev.handsup.user.repository.UserRepository;
@@ -30,7 +28,6 @@ public class ChatMessageService {
 	private final ChatMessageRepository chatMessageRepository;
 	private final UserRepository userRepository;
 	private final AuctionRepository auctionRepository;
-	private final FCMService fcmService;
 
 	@Transactional
 	public ChatMessageResponse registerChatMessage(Long chatRoomId, ChatMessageRequest request) {
@@ -38,20 +35,7 @@ public class ChatMessageService {
 		ChatMessage chatMessage = ChatMessageMapper.toChatMessage(chatRoom, request);
 		ChatMessage savedChatMessage = chatMessageRepository.save(chatMessage);
 
-		User sender = getUserById(request.senderId());
-		sendMessage(sender, chatRoom.getReceiver(sender), chatRoom);
-
 		return ChatMessageMapper.toChatMessageResponse(savedChatMessage);
-	}
-
-	private void sendMessage(User sender, User receiver, ChatRoom chatRoom) {
-		fcmService.sendMessage(
-			sender.getEmail(),
-			sender.getNickname(),
-			receiver.getEmail(),
-			NotificationType.BOOKMARK,
-			getAuctionById(chatRoom.getAuctionId())
-		);
 	}
 
 	private ChatRoom getChatRoomById(Long chatRoomId) {

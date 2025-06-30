@@ -16,8 +16,6 @@ import dev.handsup.comment.repository.CommentRepository;
 import dev.handsup.common.dto.CommonMapper;
 import dev.handsup.common.dto.PageResponse;
 import dev.handsup.common.exception.NotFoundException;
-import dev.handsup.notification.domain.NotificationType;
-import dev.handsup.notification.service.FCMService;
 import dev.handsup.user.domain.User;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +25,6 @@ public class CommentService {
 
 	private final AuctionRepository auctionRepository;
 	private final CommentRepository commentRepository;
-	private final FCMService fcmService;
 
 	@Transactional
 	public CommentResponse registerAuctionComment(Long auctionId, RegisterCommentRequest request, User user) {
@@ -36,19 +33,7 @@ public class CommentService {
 		auction.validateIfCommentAvailable();
 		Comment comment = commentRepository.save(CommentMapper.toComment(request, auction, user));
 
-		sendMessage(user, auction);
-
 		return CommentMapper.toCommentResponse(comment);
-	}
-
-	private void sendMessage(User user, Auction auction) {
-		fcmService.sendMessage(
-			user.getEmail(),
-			user.getNickname(),
-			auction.getSeller().getEmail(),
-			NotificationType.COMMENT,
-			auction
-		);
 	}
 
 	@Transactional(readOnly = true)

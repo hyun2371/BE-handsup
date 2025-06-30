@@ -23,7 +23,6 @@ import dev.handsup.common.support.ApiTestSupport;
 import dev.handsup.fixture.AuctionFixture;
 import dev.handsup.fixture.BookmarkFixture;
 import dev.handsup.fixture.UserFixture;
-import dev.handsup.notification.repository.FCMTokenRepository;
 import dev.handsup.user.domain.User;
 
 @DisplayName("[Bookmark 통합 테스트]")
@@ -37,8 +36,7 @@ class BookmarkApiControllerTest extends ApiTestSupport {
 	private AuctionRepository auctionRepository;
 	@Autowired
 	private ProductCategoryRepository productCategoryRepository;
-	@Autowired
-	private FCMTokenRepository fcmTokenRepository;
+
 
 	@BeforeEach
 	void setUp() {
@@ -54,8 +52,6 @@ class BookmarkApiControllerTest extends ApiTestSupport {
 	@Test
 	@DisplayName("[북마크를 추가할 수 있다.]")
 	void addBookmark() throws Exception {
-		// fcm 토큰 저장, seller 는 receiver
-		fcmTokenRepository.saveFcmToken(seller.getEmail(), "fcmToken123");
 
 		mockMvc.perform(post("/api/auctions/bookmarks/{auctionId}", auction.getId())
 				.contentType(APPLICATION_JSON)

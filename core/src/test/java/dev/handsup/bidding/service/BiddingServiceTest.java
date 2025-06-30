@@ -35,7 +35,7 @@ import dev.handsup.common.exception.ValidationException;
 import dev.handsup.fixture.AuctionFixture;
 import dev.handsup.fixture.BiddingFixture;
 import dev.handsup.fixture.UserFixture;
-import dev.handsup.notification.service.FCMService;
+import dev.handsup.notification.service.NotificationSender;
 import dev.handsup.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +52,7 @@ class BiddingServiceTest {
 	@Mock
 	private AuctionRepository auctionRepository;
 	@Mock
-	private FCMService fcmService;
+	private NotificationSender notificationSender;
 
 	@InjectMocks
 	private BiddingService biddingService;
