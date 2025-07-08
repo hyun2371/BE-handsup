@@ -20,4 +20,8 @@ public interface AuctionRepository extends JpaRepository<Auction, Long>, Auction
 
 	Slice<Auction> findBySeller_IdAndStatusOrderByCreatedAtDesc(
 		Long sellerId, AuctionStatus auctionStatus, Pageable pageable);
+
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("select a from Auction a where a.id = :id")
+	Optional<Auction> findByIdWithPessimisticLock(Long id);
 }

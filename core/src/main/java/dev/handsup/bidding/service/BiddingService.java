@@ -48,6 +48,22 @@ public class BiddingService {
 		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
 	}
 
+	@Transactional
+	public BiddingResponse registerBiddingWithPessimisticLock(RegisterBiddingRequest request, Long auctionId, User bidder) {
+		Auction auction = auctionRepository
+				.findByIdWithPessimisticLock(auctionId)
+				.orElseThrow(() -> new NotFoundException(AuctionErrorCode.NOT_FOUND_AUCTION));
+
+		validateBiddingPrice(request.biddingPrice(), auction);
+		updateAuctionOnNewBidding(request, auction);
+		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
+
+		sendBiddingNotification(bidder, auction);
+
+		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
+	}
+
+
 	@Transactional(readOnly = true)
 	public PageResponse<BiddingResponse> getBidsOfAuction(Long auctionId, Pageable pageable) {
 		Slice<BiddingResponse> biddingResponsePage = biddingRepository
