@@ -39,11 +39,11 @@ public class BiddingService {
 	public BiddingResponse registerBidding(RegisterBiddingRequest request, Long auctionId, User bidder) {
 		Auction auction = getAuctionById(auctionId);
 
-		validateBiddingPrice(request.biddingPrice(), auction); // 경매 입찰 최고가보다 입찰가 높은지 확인
-		auction.updateCurrentBiddingPrice(request.biddingPrice()); // 경매 입찰 최고가 갱신
-		auction.increaseBiddingCount(); // 경매 입찰 수 + 1
+		validateBiddingPrice(request.biddingPrice(), auction);
+		updateAuctionOnNewBidding(request, auction);
 		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
-		sendBiddingNotification(bidder, auction); //알림 전송
+
+		sendBiddingNotification(bidder, auction);
 
 		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
 	}
@@ -115,5 +115,10 @@ public class BiddingService {
 			auction.getId(),
 			NotificationType.BIDDING_CREATED
 		);
+	}
+
+	private void updateAuctionOnNewBidding(RegisterBiddingRequest request, Auction auction) {
+		auction.updateCurrentBiddingPrice(request.biddingPrice()); // 경매 입찰 최고가 갱신
+		auction.increaseBiddingCount(); // 경매 입찰 수 + 1
 	}
 }
