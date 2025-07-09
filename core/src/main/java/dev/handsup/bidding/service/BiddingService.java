@@ -36,17 +36,48 @@ public class BiddingService {
 
 	@Transactional
 	@DistributeLock(key = "'auction_' + #auctionId") // auctionId 값을 추출하여 락 키로 사용
-	public BiddingResponse registerBidding(RegisterBiddingRequest request, Long auctionId, User bidder) {
+	public BiddingResponse registerBiddingWithDistributedLock(RegisterBiddingRequest request, Long auctionId, User bidder) {
 		Auction auction = getAuctionById(auctionId);
 
-		validateBiddingPrice(request.biddingPrice(), auction); // 경매 입찰 최고가보다 입찰가 높은지 확인
-		auction.updateCurrentBiddingPrice(request.biddingPrice()); // 경매 입찰 최고가 갱신
-		auction.increaseBiddingCount(); // 경매 입찰 수 + 1
+		validateBiddingPrice(request.biddingPrice(), auction);
+		updateAuctionOnNewBidding(request, auction);
 		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
-		sendBiddingNotification(bidder, auction); //알림 전송
+
+		sendBiddingNotification(bidder, auction);
 
 		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
 	}
+
+	@Transactional
+	public BiddingResponse registerBiddingWithPessimisticLock(RegisterBiddingRequest request, Long auctionId, User bidder) {
+		Auction auction = auctionRepository
+				.findByIdWithPessimisticLock(auctionId)
+				.orElseThrow(() -> new NotFoundException(AuctionErrorCode.NOT_FOUND_AUCTION));
+
+		validateBiddingPrice(request.biddingPrice(), auction);
+		updateAuctionOnNewBidding(request, auction);
+		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
+
+		sendBiddingNotification(bidder, auction);
+
+		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
+	}
+
+	@Transactional
+	public BiddingResponse registerBiddingWithOptimisticLock(RegisterBiddingRequest request, Long auctionId, User bidder) {
+		Auction auction = auctionRepository
+			.findByIdWithOptimisticLock(auctionId)
+			.orElseThrow(() -> new NotFoundException(AuctionErrorCode.NOT_FOUND_AUCTION));
+
+		validateBiddingPrice(request.biddingPrice(), auction);
+		updateAuctionOnNewBidding(request, auction);
+		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
+
+		sendBiddingNotification(bidder, auction);
+
+		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
+	}
+
 
 	@Transactional(readOnly = true)
 	public PageResponse<BiddingResponse> getBidsOfAuction(Long auctionId, Pageable pageable) {
@@ -115,5 +146,10 @@ public class BiddingService {
 			auction.getId(),
 			NotificationType.BIDDING_CREATED
 		);
+	}
+
+	private void updateAuctionOnNewBidding(RegisterBiddingRequest request, Auction auction) {
+		auction.updateCurrentBiddingPrice(request.biddingPrice()); // 경매 입찰 최고가 갱신
+		auction.increaseBiddingCount(); // 경매 입찰 수 + 1
 	}
 }

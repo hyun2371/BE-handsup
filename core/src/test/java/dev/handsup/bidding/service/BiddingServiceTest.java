@@ -88,7 +88,7 @@ class BiddingServiceTest {
 		// given
 		RegisterBiddingRequest request = RegisterBiddingRequest.from(20000);
 
-		given(auctionRepository.findById(auction.getId())).willReturn(Optional.of(auction));
+		given(auctionRepository.findByIdWithPessimisticLock(auction.getId())).willReturn(Optional.of(auction));
 
 		Bidding bidding = Bidding.of(
 			request.biddingPrice(),
@@ -100,7 +100,7 @@ class BiddingServiceTest {
 		given(biddingRepository.findMaxBiddingPriceByAuctionId(any(Long.class))).willReturn(19000);
 
 		// when
-		BiddingResponse response = biddingService.registerBidding(request, auction.getId(), user);
+		BiddingResponse response = biddingService.registerBiddingWithPessimisticLock(request, auction.getId(), user);
 
 		// then
 		assertThat(response).isNotNull();
