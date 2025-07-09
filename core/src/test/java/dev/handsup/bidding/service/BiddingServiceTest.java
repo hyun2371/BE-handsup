@@ -100,7 +100,7 @@ class BiddingServiceTest {
 		given(biddingRepository.findMaxBiddingPriceByAuctionId(any(Long.class))).willReturn(19000);
 
 		// when
-		BiddingResponse response = biddingService.registerBidding(request, auction.getId(), user);
+		BiddingResponse response = biddingService.registerBiddingWithPessimisticLock(request, auction.getId(), user);
 
 		// then
 		assertThat(response).isNotNull();
