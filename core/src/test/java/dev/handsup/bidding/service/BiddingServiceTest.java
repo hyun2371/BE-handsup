@@ -88,7 +88,7 @@ class BiddingServiceTest {
 		// given
 		RegisterBiddingRequest request = RegisterBiddingRequest.from(20000);
 
-		given(auctionRepository.findById(auction.getId())).willReturn(Optional.of(auction));
+		given(auctionRepository.findByIdWithPessimisticLock(auction.getId())).willReturn(Optional.of(auction));
 
 		Bidding bidding = Bidding.of(
 			request.biddingPrice(),
