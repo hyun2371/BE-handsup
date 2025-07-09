@@ -104,9 +104,6 @@ public class Auction extends TimeBaseEntity {
 	@Column(name = "bookmark_count", nullable = false)
 	private int bookmarkCount = 0;
 
-	// @Version
-	// private Long version;
-
 	@Builder
 	private Auction(User seller, String title, Product product, int initPrice, LocalDate endDate,
 		TradingLocation tradingLocation,
