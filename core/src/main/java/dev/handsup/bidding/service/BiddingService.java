@@ -36,7 +36,7 @@ public class BiddingService {
 
 	@Transactional
 	@DistributeLock(key = "'auction_' + #auctionId") // auctionId 값을 추출하여 락 키로 사용
-	public BiddingResponse registerBidding(RegisterBiddingRequest request, Long auctionId, User bidder) {
+	public BiddingResponse registerBiddingWithDistributedLock(RegisterBiddingRequest request, Long auctionId, User bidder) {
 		Auction auction = getAuctionById(auctionId);
 
 		validateBiddingPrice(request.biddingPrice(), auction);
@@ -53,6 +53,21 @@ public class BiddingService {
 		Auction auction = auctionRepository
 				.findByIdWithPessimisticLock(auctionId)
 				.orElseThrow(() -> new NotFoundException(AuctionErrorCode.NOT_FOUND_AUCTION));
+
+		validateBiddingPrice(request.biddingPrice(), auction);
+		updateAuctionOnNewBidding(request, auction);
+		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
+
+		sendBiddingNotification(bidder, auction);
+
+		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
+	}
+
+	@Transactional
+	public BiddingResponse registerBiddingWithOptimisticLock(RegisterBiddingRequest request, Long auctionId, User bidder) {
+		Auction auction = auctionRepository
+			.findByIdWithOptimisticLock(auctionId)
+			.orElseThrow(() -> new NotFoundException(AuctionErrorCode.NOT_FOUND_AUCTION));
 
 		validateBiddingPrice(request.biddingPrice(), auction);
 		updateAuctionOnNewBidding(request, auction);

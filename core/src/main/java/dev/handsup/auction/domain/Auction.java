@@ -39,6 +39,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Version;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -103,6 +104,9 @@ public class Auction extends TimeBaseEntity {
 
 	@Column(name = "bookmark_count", nullable = false)
 	private int bookmarkCount = 0;
+
+	@Version
+	private Long version;
 
 	@Builder
 	private Auction(User seller, String title, Product product, int initPrice, LocalDate endDate,

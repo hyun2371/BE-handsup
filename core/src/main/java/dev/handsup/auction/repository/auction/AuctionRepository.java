@@ -1,14 +1,18 @@
 package dev.handsup.auction.repository.auction;
 
+import java.util.Optional;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import dev.handsup.auction.domain.Auction;
 import dev.handsup.auction.domain.auction_field.AuctionStatus;
 import dev.handsup.user.domain.User;
+import jakarta.persistence.LockModeType;
 
 public interface AuctionRepository extends JpaRepository<Auction, Long>, AuctionQueryRepository {
 
@@ -24,4 +28,8 @@ public interface AuctionRepository extends JpaRepository<Auction, Long>, Auction
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("select a from Auction a where a.id = :id")
 	Optional<Auction> findByIdWithPessimisticLock(Long id);
+
+	@Lock(LockModeType.OPTIMISTIC)
+	@Query("select a from Auction a where a.id = :id")
+	Optional<Auction> findByIdWithOptimisticLock(Long id);
 }
