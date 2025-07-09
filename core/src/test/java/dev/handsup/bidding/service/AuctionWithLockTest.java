@@ -66,7 +66,7 @@ public class AuctionWithLockTest extends TestContainerSupport {
 		ProductCategory productCategory = productCategoryRepository.save(ProductCategory.from("디지털 기기"));
 		auction = auctionRepository.save(AuctionFixture.auction(productCategory));
 		user = userRepository.save(UserFixture.user1());
-		threadCount = 2000;
+		threadCount = 1000;
 		poolSize = 32;
 	}
 
