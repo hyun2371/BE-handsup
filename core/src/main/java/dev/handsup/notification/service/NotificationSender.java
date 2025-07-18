@@ -3,7 +3,6 @@ package dev.handsup.notification.service;
 import org.springframework.stereotype.Service;
 
 import dev.handsup.notification.domain.NotificationType;
-import dev.handsup.user.domain.User;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -12,13 +11,14 @@ public class NotificationSender {
 	private final NotificationService notificationService;
 	private final FcmService fcmService;
 
-	public void sendNotification(User sender, User receiver, Long auctionId, NotificationType notificationType) {
-		String content = notificationType.processContent(sender.getNickname());
+	public void sendNotification(Long senderId, Long receiverId, String senderNickname, Long auctionId,
+		NotificationType notificationType) {
+		String content = notificationType.processContent(senderNickname);
 		fcmService.sendNotification(
-			receiver.getId(),
+			receiverId,
 			content,
 			notificationType
 		);
-		notificationService.saveNotification(sender, receiver, auctionId, content, notificationType);
+		notificationService.saveNotification(senderId, receiverId, auctionId, content, notificationType);
 	}
 }
