@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class OptimisticLockAuctionFacade {
-	private final BiddingService biddingService;
+	private final BiddingLockService biddingService;
 	private static final long RETRY_DELAY_MS = 50;
 
 	public BiddingResponse registerBidding(

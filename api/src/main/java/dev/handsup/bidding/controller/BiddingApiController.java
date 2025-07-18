@@ -41,7 +41,7 @@ public class BiddingApiController {
 		@Valid @RequestBody RegisterBiddingRequest request,
 		@Parameter(hidden = true) @JwtAuthorization User bidder
 	) {
-		BiddingResponse response = biddingService.registerBiddingWithPessimisticLock(request, auctionId, bidder);
+		BiddingResponse response = biddingService.registerBidding(request, auctionId, bidder);
 		return ResponseEntity.ok(response);
 	}
 
