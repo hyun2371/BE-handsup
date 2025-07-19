@@ -21,7 +21,6 @@ import dev.handsup.common.dto.PageResponse;
 import dev.handsup.common.exception.NotFoundException;
 import dev.handsup.common.exception.ValidationException;
 import dev.handsup.notification.domain.NotificationType;
-import dev.handsup.notification.service.NotificationSender;
 import dev.handsup.user.domain.User;
 import lombok.RequiredArgsConstructor;
 
@@ -33,24 +32,24 @@ public class BiddingService {
 	private final BiddingQueryRepository biddingQueryRepository;
 	private final AuctionRepository auctionRepository;
 	private final ApplicationEventPublisher eventPublisher;
-	private final NotificationSender notificationSender;
 
 	@Transactional
 	public BiddingResponse registerBidding(RegisterBiddingRequest request, Long auctionId, User bidder) {
 		Auction auction = auctionRepository
-				.findByIdWithPessimisticLock(auctionId)
-				.orElseThrow(() -> new NotFoundException(AuctionErrorCode.NOT_FOUND_AUCTION));
+			.findByIdWithPessimisticLock(auctionId)
+			.orElseThrow(() -> new NotFoundException(AuctionErrorCode.NOT_FOUND_AUCTION));
 
 		validateBiddingPrice(request.biddingPrice(), auction);
 		updateAuctionOnNewBidding(request, auction);
 		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
-		notificationSender.sendNotification(
+
+		eventPublisher.publishEvent(new NotificationEvent(
 			bidder.getId(),
 			auction.getSeller().getId(),
 			auction.getSeller().getNickname(),
 			auction.getId(),
 			NotificationType.BIDDING_CREATED
-		);
+		));
 
 		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
 	}
