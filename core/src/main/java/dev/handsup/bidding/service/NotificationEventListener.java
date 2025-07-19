@@ -18,20 +18,12 @@ public class NotificationEventListener {
 	@Async
 	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 	public void handleBiddingEventCompleted(NotificationEvent event) {
-		try {
-			notificationSender.sendNotification(
-				event.senderId(),
-				event.receiverId(),
-				event.receiverNickname(),
-				event.auctionId(),
-				event.type()
-			);
-		} catch (Exception e) {
-			log.error("알림 발송 실패. type={}, senderId={}, receiverId={}",
-				event.type().name(),
-				event.senderId(),
-				event.receiverId(),
-				e);
-		}
+		notificationSender.sendNotification(
+			event.senderId(),
+			event.receiverId(),
+			event.receiverNickname(),
+			event.auctionId(),
+			event.type()
+		);
 	}
 }

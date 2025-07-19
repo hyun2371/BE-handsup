@@ -44,10 +44,10 @@ public class FcmService {
 	private void send(Message message, Long receiverId) {
 		try {
 			firebaseMessaging.send(message);
-			log.info("Sent message: {}, to: {}", message, receiverId);
+			log.info("알림 전송 성공: {} to: {}", message, receiverId);
 		} catch (FirebaseMessagingException e) {
-			log.info("알림 메시지: {}",e.getMessage());
-			// throw new ValidationException(e.getMessage());
+			log.error("알림 발송 실패 receiverId={} message={}",
+			receiverId,e.getMessage());
 		}
 	}
 
