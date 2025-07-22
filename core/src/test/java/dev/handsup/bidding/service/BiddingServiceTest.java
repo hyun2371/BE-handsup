@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -35,7 +36,6 @@ import dev.handsup.common.exception.ValidationException;
 import dev.handsup.fixture.AuctionFixture;
 import dev.handsup.fixture.BiddingFixture;
 import dev.handsup.fixture.UserFixture;
-import dev.handsup.notification.service.NotificationSender;
 import dev.handsup.user.domain.User;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +52,7 @@ class BiddingServiceTest {
 	@Mock
 	private AuctionRepository auctionRepository;
 	@Mock
-	private NotificationSender notificationSender;
+	private ApplicationEventPublisher eventPublisher;
 
 	@InjectMocks
 	private BiddingService biddingService;
