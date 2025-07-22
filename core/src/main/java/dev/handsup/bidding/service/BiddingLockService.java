@@ -1,8 +1,5 @@
 package dev.handsup.bidding.service;
 
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,27 +11,28 @@ import dev.handsup.bidding.dto.BiddingMapper;
 import dev.handsup.bidding.dto.request.RegisterBiddingRequest;
 import dev.handsup.bidding.dto.response.BiddingResponse;
 import dev.handsup.bidding.exception.BiddingErrorCode;
-import dev.handsup.bidding.repository.BiddingQueryRepository;
 import dev.handsup.bidding.repository.BiddingRepository;
-import dev.handsup.common.dto.CommonMapper;
-import dev.handsup.common.dto.PageResponse;
 import dev.handsup.common.exception.NotFoundException;
 import dev.handsup.common.exception.ValidationException;
+import dev.handsup.common.redisson.DistributeLock;
 import dev.handsup.notification.domain.NotificationType;
+import dev.handsup.notification.service.NotificationSender;
 import dev.handsup.user.domain.User;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * lock 간 입찰 소요 시간 성능 테스트
+ */
 @Service
 @RequiredArgsConstructor
-public class BiddingService {
+public class BiddingLockService {
 
 	private final BiddingRepository biddingRepository;
-	private final BiddingQueryRepository biddingQueryRepository;
 	private final AuctionRepository auctionRepository;
-	private final ApplicationEventPublisher eventPublisher;
+	private final NotificationSender notificationSender;
 
 	@Transactional
-	public BiddingResponse registerBidding(RegisterBiddingRequest request, Long auctionId, User bidder) {
+	public BiddingResponse registerBiddingWithPessimisticLock(RegisterBiddingRequest request, Long auctionId, User bidder) {
 		Auction auction = auctionRepository
 			.findByIdWithPessimisticLock(auctionId)
 			.orElseThrow(() -> new NotFoundException(AuctionErrorCode.NOT_FOUND_AUCTION));
@@ -42,51 +40,44 @@ public class BiddingService {
 		validateBiddingPrice(request.biddingPrice(), auction);
 		updateAuctionOnNewBidding(request, auction);
 		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
-
-		eventPublisher.publishEvent(new NotificationEvent(
+		notificationSender.sendNotification(
 			bidder.getId(),
 			auction.getSeller().getId(),
 			auction.getSeller().getNickname(),
 			auction.getId(),
 			NotificationType.BIDDING_CREATED
-		));
+		);
 
 		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
 	}
 
-	@Transactional(readOnly = true)
-	public PageResponse<BiddingResponse> getBidsOfAuction(Long auctionId, Pageable pageable) {
-		Slice<BiddingResponse> biddingResponsePage = biddingRepository
-			.findByAuctionIdOrderByBiddingPriceDesc(auctionId, pageable)
-			.map(BiddingMapper::toBiddingResponse);
-		return CommonMapper.toPageResponse(biddingResponsePage);
-	}
 
 	@Transactional
-	public BiddingResponse completeTrading(Long biddingId, User user) {
-		Bidding bidding = findBiddingById(biddingId);
-		bidding.getAuction().validateIfSeller(user);
+	public BiddingResponse registerBiddingWithOptimisticLock(RegisterBiddingRequest request, Long auctionId, User bidder) {
+		Auction auction = auctionRepository
+			.findByIdWithOptimisticLock(auctionId)
+			.orElseThrow(() -> new NotFoundException(AuctionErrorCode.NOT_FOUND_AUCTION));
 
-		bidding.updateTradingStatusComplete();
-		bidding.getAuction().updateAuctionStatusCompleted();
-		bidding.getAuction().updateBuyer(bidding.getBidder());
-		bidding.getAuction().updateBuyPrice(bidding.getBiddingPrice());
+		validateBiddingPrice(request.biddingPrice(), auction);
+		updateAuctionOnNewBidding(request, auction);
+		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
 
-		return BiddingMapper.toBiddingResponse(bidding);
+		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
 	}
+
 
 	@Transactional
-	public BiddingResponse cancelTrading(Long biddingId, User user) {
-		Bidding bidding = findBiddingById(biddingId);
-		bidding.getAuction().validateIfSeller(user);
-		bidding.updateTradingStatusCanceled();
+	@DistributeLock(key = "'auction_' + #auctionId") // auctionId 값을 추출하여 락 키로 사용
+	public BiddingResponse registerBiddingWithDistributedLock(RegisterBiddingRequest request, Long auctionId, User bidder) {
+		Auction auction = getAuctionById(auctionId);
 
-		Bidding nextBidding = biddingQueryRepository.findWaitingBiddingLatest(bidding.getAuction())
-			.orElseThrow(() -> new NotFoundException(BiddingErrorCode.NOT_FOUND_NEXT_BIDDING));
-		nextBidding.updateTradingStatusPreparing();    // 다음 입찰 준비중 상태로 변경
+		validateBiddingPrice(request.biddingPrice(), auction);
+		updateAuctionOnNewBidding(request, auction);
+		Bidding bidding = BiddingMapper.toBidding(request.biddingPrice(), auction, bidder);
 
-		return BiddingMapper.toBiddingResponse(bidding);
+		return BiddingMapper.toBiddingResponse(biddingRepository.save(bidding));
 	}
+
 
 	public void validateBiddingPrice(int biddingPrice, Auction auction) {
 		Integer maxBiddingPrice = biddingRepository.findMaxBiddingPriceByAuctionId(auction.getId());
@@ -104,13 +95,14 @@ public class BiddingService {
 		}
 	}
 
-	private Bidding findBiddingById(Long biddingId) {
-		return biddingRepository.findById(biddingId)
-			.orElseThrow(() -> new NotFoundException(BiddingErrorCode.NOT_FOUND_BIDDING));
-	}
-
 	private void updateAuctionOnNewBidding(RegisterBiddingRequest request, Auction auction) {
 		auction.updateCurrentBiddingPrice(request.biddingPrice()); // 경매 입찰 최고가 갱신
 		auction.increaseBiddingCount(); // 경매 입찰 수 + 1
+	}
+
+
+	private Auction getAuctionById(Long auctionId) {
+		return auctionRepository.findById(auctionId)
+			.orElseThrow(() -> new NotFoundException(AuctionErrorCode.NOT_FOUND_AUCTION));
 	}
 }

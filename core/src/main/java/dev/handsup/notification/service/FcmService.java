@@ -7,7 +7,6 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 
-import dev.handsup.common.exception.ValidationException;
 import dev.handsup.notification.domain.NotificationType;
 import dev.handsup.notification.repository.FcmTokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +26,7 @@ public class FcmService {
 	) {
 		String fcmToken = fcmTokenRepository.getFcmToken(receiverId);
 		if (fcmToken == null) {
+			log.info("알림/fcm토큰 없음");
 			return;
 		}
 
@@ -44,9 +44,10 @@ public class FcmService {
 	private void send(Message message, Long receiverId) {
 		try {
 			firebaseMessaging.send(message);
-			log.info("Sent message: {}, to: {}", message, receiverId);
+			log.info("알림 전송 성공: {} to: {}", message, receiverId);
 		} catch (FirebaseMessagingException e) {
-			throw new ValidationException(e.getMessage());
+			log.error("알림 발송 실패 receiverId={} message={}",
+			receiverId,e.getMessage());
 		}
 	}
 

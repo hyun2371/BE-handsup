@@ -45,7 +45,7 @@ public class AuctionWithLockTest extends TestContainerSupport {
 	private int[] biddingPrices;
 
 	@Autowired
-	private BiddingService biddingService;
+	private BiddingLockService biddingService;
 
 	@Autowired
 	private ProductCategoryRepository productCategoryRepository;
